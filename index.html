@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UPI Guardian</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  
+  <section id="loginScreen">
+    <div class="login-card">
+      <h1>🛡️ UPI Guardian</h1>
+      <p class="tagline">Smart protection for the people who trust you most</p>
+
+      <form id="loginForm" novalidate>
+        <label for="emailInput">Email</label>
+        <input type="email" id="emailInput" placeholder="you@example.com">
+
+        <label for="passwordInput">Password</label>
+        <input type="password" id="passwordInput" placeholder="Enter password">
+
+        <p id="loginError" class="error hidden"></p>
+
+        <button type="submit" class="btn-primary">Login</button>
+      </form>
+      <button id="demoLoginBtn" class="btn-outline">⚡ Demo Login</button>
+    </div>
+  </section>
+
+ 
+  <section id="mainApp" class="hidden">
+    <div class="app-layout">
+
+      <nav class="sidebar">
+        <h2 class="sidebar-logo">🛡️ UPI Guardian</h2>
+        <a class="nav-link active" data-page="dashboardPage">📊 Dashboard</a>
+        <a class="nav-link" data-page="transactionPage">💳 Check Transaction</a>
+        <a class="nav-link" data-page="messagePage">✉️ Check Message</a>
+        <a class="nav-link" data-page="activityPage">🚨 Activity Log</a>
+        <a class="nav-link" data-page="howPage">ℹ️ How It Works</a>
+        <div class="user-chip">
+          <strong id="userName">User</strong>
+          <span id="userEmail"></span>
+        </div>
+        <button id="logoutBtn">Logout</button>
+      </nav>
+
+      <main class="content">
+
+        
+        <div id="dashboardPage" class="page active">
+          <h2>Dashboard</h2>
+          <p class="page-subtitle">Overview of monitored account activity</p>
+
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-number" data-target="1247">0</div><div class="stat-label">Transactions Monitored</div></div>
+            <div class="stat-card"><div class="stat-number" data-target="12">0</div><div class="stat-label">Threats Blocked</div></div>
+            <div class="stat-card"><div class="stat-number" data-target="4">0</div><div class="stat-label">Family Members Protected</div></div>
+            <div class="stat-card"><div class="stat-number" data-target="94" data-suffix="%">0</div><div class="stat-label">Detection Accuracy</div></div>
+          </div>
+
+          <div class="two-col">
+            <div class="card">
+              <h3>💳 Check a Transaction</h3>
+              <p class="muted">Run a payment through the fraud detector.</p>
+              <button class="btn-primary" data-goto="transactionPage">Open Checker</button>
+            </div>
+            <div class="card">
+              <h3>✉️ Check a Message</h3>
+              <p class="muted">Scan an SMS or call text for scam language.</p>
+              <button class="btn-primary" data-goto="messagePage">Open Analyzer</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Recent Activity</h3>
+            <div id="recentList"></div>
+            <button class="btn-outline small" data-goto="activityPage">View all →</button>
+          </div>
+        </div>
+
+        
+        <div id="transactionPage" class="page">
+          <h2>Check a Transaction</h2>
+          <p class="page-subtitle">Enter transaction details to analyze fraud risk</p>
+
+          <div class="card form-card">
+            <label for="txAmount">Amount (₹)</label>
+            <input type="number" id="txAmount" min="0" placeholder="e.g. 15000">
+
+            <label for="txHour">Hour of day: <strong id="txHourLabel">12:00 PM</strong></label>
+            <input type="range" id="txHour" min="0" max="23" value="12">
+
+            <label for="txVelocity">Transactions in last 60 minutes</label>
+            <input type="number" id="txVelocity" min="0" value="0">
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="txNewPayee"> New / unknown payee
+            </label>
+
+            <button id="checkTxBtn" class="btn-primary">Analyze Transaction</button>
+            <p id="txError" class="error hidden"></p>
+
+            <div id="txResult" class="hidden">
+              <div class="gauge-wrap">
+                <svg viewBox="0 0 120 120" class="gauge">
+                  <circle cx="60" cy="60" r="50" class="gauge-track"/>
+                  <circle cx="60" cy="60" r="50" id="gaugeArc" class="gauge-arc"/>
+                </svg>
+                <div id="gaugeScore" class="gauge-score">0</div>
+              </div>
+              <div class="center"><span id="txBadge" class="badge"></span></div>
+              <div id="txExplain" class="result-box"></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div id="messagePage" class="page">
+          <h2>Check a Message</h2>
+          <p class="page-subtitle">Paste an SMS or call transcript to scan for scam language</p>
+
+          <div class="card form-card wide">
+            <p class="muted">Try an example:</p>
+            <div id="exampleChips" class="chips"></div>
+
+            <label for="smsText">Message text</label>
+            <textarea id="smsText" rows="4" placeholder="e.g. Share your OTP now or your account will be blocked"></textarea>
+
+            <button id="checkSmsBtn" class="btn-primary">Analyze Message</button>
+            <p id="smsError" class="error hidden"></p>
+
+            <div id="smsResult" class="hidden">
+              <div class="bar-head"><span>Scam probability</span><strong id="smsPercent">0%</strong></div>
+              <div class="bar-track"><div id="smsBar" class="bar-fill"></div></div>
+              <div id="smsPhrases" class="phrases"></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div id="activityPage" class="page">
+          <h2>Activity Log</h2>
+          <p class="page-subtitle">All checked transactions, newest first. Click a row for details.</p>
+
+          <div class="filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="safe">Safe</button>
+            <button class="filter-btn" data-filter="caution">Caution</button>
+            <button class="filter-btn" data-filter="risk">High Risk</button>
+          </div>
+
+          <div class="card table-card">
+            <table>
+              <thead>
+                <tr><th>Time</th><th>Amount</th><th>Payee</th><th>Risk</th></tr>
+              </thead>
+              <tbody id="activityBody"></tbody>
+            </table>
+            <p id="activityEmpty" class="muted center hidden">No activity matches this filter ✅</p>
+          </div>
+        </div>
+
+        
+        <div id="howPage" class="page">
+          <h2>How It Works</h2>
+          <p class="page-subtitle">Why combining two signals catches more fraud than either alone</p>
+
+          <div class="steps">
+            <div class="step"><div class="step-icon">📈</div><h3>1. Learn normal patterns</h3><p class="muted">We look at amount, timing and payee to see if a payment is unusual.</p></div>
+            <div class="step"><div class="step-icon">💬</div><h3>2. Scan messages</h3><p class="muted">Recent SMS or call text is checked for scam language like urgency and OTP requests.</p></div>
+            <div class="step"><div class="step-icon">🛡️</div><h3>3. Fuse the signals</h3><p class="muted">An unusual payment alone, or a scary message alone, may be harmless. Both together, close in time, is a strong red flag.</p></div>
+          </div>
+
+          <div class="card">
+            <h3>The fusion rule</h3>
+            <p class="muted">If a message scored above 50% scam in the last 15 minutes, the transaction score is multiplied by 1.5 and a bonus is added. The final score is capped at 100.</p>
+          </div>
+
+          <p class="disclaimer">Prototype built for a college project using demo data. Not affiliated with any bank.</p>
+        </div>
+
+      </main>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
